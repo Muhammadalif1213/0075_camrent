@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:paml_camrent/data/presentation/auth/login/login_bloc.dart';
 import 'package:paml_camrent/data/presentation/auth/register/register_bloc.dart';
 import 'package:paml_camrent/data/presentation/auth/register_screen.dart';
 import 'package:paml_camrent/repository/auth_repository.dart';
@@ -15,14 +16,24 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => RegisterBloc(authRepository: AuthRepository(ServicesHttpClient())),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => RegisterBloc(
+            authRepository: AuthRepository(ServicesHttpClient()),
+          ),
+        ),
+        BlocProvider(
+          create: (context) =>
+              LoginBloc(authRepository: AuthRepository(ServicesHttpClient())),
+        ),
+      ],
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         ),
-        home: const RegisterScreen()
+        home: const RegisterScreen(),
       ),
     );
   }

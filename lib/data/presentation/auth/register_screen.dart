@@ -7,6 +7,7 @@ import 'package:paml_camrent/core/components/spaces.dart';
 import 'package:paml_camrent/core/constants/colors.dart';
 import 'package:paml_camrent/core/core.dart';
 import 'package:paml_camrent/data/models/request/auth/register_request_model.dart';
+import 'package:paml_camrent/data/presentation/auth/login_screen.dart';
 import 'package:paml_camrent/data/presentation/auth/register/register_bloc.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -119,6 +120,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         context,
                       ).showSnackBar(SnackBar(content: Text(state.error)));
                     } else if (state is RegisterSuccess) {
+                      context.pushAndRemoveUntil(
+                        const LoginScreen(),
+                        (route) => false,
+                      );
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(state.message),
@@ -171,6 +176,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         recognizer:
                             TapGestureRecognizer()
                               ..onTap = () {
+                                context.pushAndRemoveUntil(
+                                  const LoginScreen(),
+                                  (route) => false,
+                                );
                               },
                       ),
                     ],
