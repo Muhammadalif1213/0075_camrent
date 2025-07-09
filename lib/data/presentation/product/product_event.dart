@@ -12,3 +12,9 @@ class AddProductEvent extends ProductEvent {
 }
 
 class FetchAllProductsEvent extends ProductEvent {}
+
+class DeleteProductEvent extends ProductEvent {
+  final int productId;
+
+  DeleteProductEvent({required this.productId});
+}

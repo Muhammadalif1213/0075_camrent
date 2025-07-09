@@ -61,7 +61,9 @@ class ServicesHttpClient {
 
     request.headers['Authorization'] = 'Bearer $token';
     request.fields.addAll(fields);
-    request.files.add(await http.MultipartFile.fromPath(fileFieldName, file.path));
+    request.files.add(
+      await http.MultipartFile.fromPath(fileFieldName, file.path),
+    );
 
     return request.send();
   }
@@ -86,5 +88,21 @@ class ServicesHttpClient {
   }
 
   //put
-  //delete
+  // DELETE with Token
+  Future<http.Response> deleteWithToken(String endpoint) async {
+    final token = await secureStorage.read(key: "authToken");
+    final url = Uri.parse("$baseUrl$endpoint");
+    try {
+      final response = await http.delete(
+        url,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Accept': 'application/json',
+        },
+      );
+      return response;
+    } catch (e) {
+      throw Exception("DELETE request failed: $e");
+    }
+  }
 }

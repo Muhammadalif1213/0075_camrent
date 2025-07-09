@@ -15,6 +15,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
   ProductBloc({required this.productRepository}) : super(ProductInitial()) {
     on<AddProductEvent>(_addProduct);
     on<FetchAllProductsEvent>(_fetchAllProducts);
+    on<DeleteProductEvent>(_deleteProduct);
     on<ProductEvent>((event, emit) async {});
   }
 
@@ -37,6 +38,21 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     try {
       final products = await productRepository.getAllProducts();
       emit(ProductListLoaded(products: products));
+    } catch (e) {
+      emit(ProductError(message: e.toString()));
+    }
+  }
+
+
+  Future<void> _deleteProduct(
+    DeleteProductEvent event,
+    Emitter<ProductState> emit,
+  ) async {
+    emit(ProductLoading());
+    try {
+      await productRepository.deleteProduct(event.productId);
+      emit(ProductDeleted(message: '')); // Optional: buat state khusus untuk delete
+      add(FetchAllProductsEvent()); // untuk refresh data
     } catch (e) {
       emit(ProductError(message: e.toString()));
     }

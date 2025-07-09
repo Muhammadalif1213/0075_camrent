@@ -50,4 +50,20 @@ class ProductRepository {
       throw Exception('Gagal mengambil data produk: ${response.body}');
     }
   }
+
+  Future<Either<String, String>> deleteProduct(int id) async {
+  try {
+    final response = await _serviceHttpClient.deleteWithToken('cameras/$id');
+
+    if (response.statusCode == 200) {
+      final jsonResponse = jsonDecode(response.body);
+      return Right(jsonResponse['message'] ?? 'Produk berhasil dihapus');
+    } else {
+      final jsonResponse = jsonDecode(response.body);
+      return Left(jsonResponse['message'] ?? 'Gagal menghapus produk');
+    }
+  } catch (e) {
+    return Left('Terjadi kesalahan saat menghapus produk: $e');
+  }
+}
 }

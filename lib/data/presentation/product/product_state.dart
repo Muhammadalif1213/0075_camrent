@@ -24,3 +24,10 @@ class ProductListLoaded extends ProductState {
 
   ProductListLoaded({required this.products});
 }
+
+class ProductDeleted extends ProductState {
+  final String message;
+
+  ProductDeleted({required this.message});
+}
+
