@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
@@ -46,6 +47,23 @@ class ServicesHttpClient {
     } catch (e) {
       throw Exception("Post request failed: $e");
     }
+  }
+
+  Future<http.StreamedResponse> postMultipartWithToken({
+    required String endpoint,
+    required Map<String, String> fields,
+    required File file,
+    required String fileFieldName,
+  }) async {
+    final token = await secureStorage.read(key: "authToken");
+    final uri = Uri.parse('$baseUrl/$endpoint');
+    final request = http.MultipartRequest('POST', uri);
+
+    request.headers['Authorization'] = 'Bearer $token';
+    request.fields.addAll(fields);
+    request.files.add(await http.MultipartFile.fromPath(fileFieldName, file.path));
+
+    return request.send();
   }
 
   //get
