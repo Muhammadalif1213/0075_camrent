@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:paml_camrent/data/presentation/auth/login_screen.dart';
+import 'package:paml_camrent/screens/admin/admin_product_list_screen.dart';
 import 'add_product_screen.dart'; // import halaman tambah produk
 
 class AdminConfirmScreen extends StatelessWidget {
@@ -85,6 +86,19 @@ class AdminConfirmScreen extends StatelessWidget {
               },
               icon: const Icon(Icons.add),
               label: const Text('Tambah Produk Kamera'),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton.icon(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const AdminProductListScreen(),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.add),
+              label: const Text('List kamera tersedia'),
             ),
           ],
         ),

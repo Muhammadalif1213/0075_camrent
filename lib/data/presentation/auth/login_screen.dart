@@ -5,8 +5,8 @@ import 'package:paml_camrent/data/presentation/auth/register_screen.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:paml_camrent/screens/admin_confirm_screen.dart';
-import 'package:paml_camrent/screens/customer_confirm_screen.dart';
+import 'package:paml_camrent/screens/admin/admin_confirm_screen.dart';
+import 'package:paml_camrent/screens/customer/customer_confirm_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
