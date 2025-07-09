@@ -48,6 +48,25 @@ class ServicesHttpClient {
     }
   }
 
+  //get
+  Future<http.Response> get(String endpoint) async {
+    final token = await secureStorage.read(key: "authToken");
+    final url = Uri.parse("$baseUrl$endpoint");
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Accept': 'application/json',
+          'content-type': 'application.json',
+        },
+      );
+      return response;
+    } catch (e) {
+      throw Exception("Post request failed: $e");
+    }
+  }
+
   //put
   //delete
 }

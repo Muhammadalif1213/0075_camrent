@@ -3,6 +3,7 @@ import 'package:meta/meta.dart';
 
 import 'package:paml_camrent/data/models/request/product/add_product_request_model.dart';
 import 'package:paml_camrent/data/models/response/product/add_product_response.dart';
+import 'package:paml_camrent/data/models/response/product/get_all_product__response_model.dart';
 import 'package:paml_camrent/repository/product_repository.dart';
 
 part 'product_event.dart';
@@ -13,6 +14,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
 
   ProductBloc({required this.productRepository}) : super(ProductInitial()) {
     on<AddProductEvent>(_addProduct);
+    on<FetchAllProductsEvent>(_fetchAllProducts);
     on<ProductEvent>((event, emit) async {});
   }
 
@@ -24,6 +26,19 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     try {
       final product = await productRepository.createProduct(event.requestModel);
       emit(ProductAdded(product: product));
+    } catch (e) {
+      emit(ProductError(message: e.toString()));
+    }
+  }
+
+  Future<void> _fetchAllProducts(
+    FetchAllProductsEvent event,
+    Emitter<ProductState> emit,
+  ) async {
+    emit(ProductLoading());
+    try {
+      final products = await productRepository.getAllProducts();
+      emit(ProductListLoaded(products: products));
     } catch (e) {
       emit(ProductError(message: e.toString()));
     }

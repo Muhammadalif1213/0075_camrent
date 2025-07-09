@@ -18,3 +18,9 @@ class ProductError extends ProductState {
 
   ProductError({required this.message});
 }
+
+class ProductListLoaded extends ProductState {
+  final List<Datum> products;
+
+  ProductListLoaded({required this.products});
+}

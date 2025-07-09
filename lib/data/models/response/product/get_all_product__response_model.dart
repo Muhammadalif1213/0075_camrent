@@ -1,18 +1,18 @@
 import 'dart:convert';
 
-class GetAllProductRequestModel {
+class ProduGetAllProductResponseModel {
   final String? message;
   final List<Datum>? data;
 
-  GetAllProductRequestModel({this.message, this.data});
+  ProduGetAllProductResponseModel({this.message, this.data});
 
-  factory GetAllProductRequestModel.fromJson(String str) =>
-      GetAllProductRequestModel.fromMap(json.decode(str));
+  factory ProduGetAllProductResponseModel.fromJson(String str) =>
+      ProduGetAllProductResponseModel.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
-  factory GetAllProductRequestModel.fromMap(Map<String, dynamic> json) =>
-      GetAllProductRequestModel(
+  factory ProduGetAllProductResponseModel.fromMap(Map<String, dynamic> json) =>
+      ProduGetAllProductResponseModel(
         message: json["message"],
         data: json["data"] == null
             ? []

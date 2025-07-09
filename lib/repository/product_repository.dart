@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:dartz/dartz.dart';
 import 'package:paml_camrent/data/models/request/product/add_product_request_model.dart';
 import 'package:paml_camrent/data/models/response/product/add_product_response.dart';
+import 'package:paml_camrent/data/models/response/product/get_all_product__response_model.dart';
 import 'package:paml_camrent/services/services_http_client.dart';
 
 class ProductRepository {
@@ -28,6 +29,19 @@ class ProductRepository {
       throw Exception(
         'Gagal menambahkan produk. Status: ${response.statusCode}\nBody: ${response.body}',
       );
+    }
+  }
+
+  Future<List<Datum>> getAllProducts() async {
+    final response = await _serviceHttpClient.get(
+      'cameras',
+    ); // endpoint sesuai API
+
+    if (response.statusCode == 200) {
+      final result = ProduGetAllProductResponseModel.fromJson(response.body);
+      return result.data ?? [];
+    } else {
+      throw Exception('Gagal mengambil data produk: ${response.body}');
     }
   }
 }

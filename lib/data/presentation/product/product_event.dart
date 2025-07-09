@@ -10,3 +10,5 @@ class AddProductEvent extends ProductEvent {
 
   AddProductEvent({required this.requestModel});
 }
+
+class FetchAllProductsEvent extends ProductEvent {}
