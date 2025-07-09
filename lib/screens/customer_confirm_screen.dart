@@ -19,12 +19,65 @@ class _CustomerConfirmScreenState extends State<CustomerConfirmScreen> {
     context.read<ProductBloc>().add(FetchAllProductsEvent());
   }
 
+  void _confirmLogout(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Konfirmasi Logout'),
+        content: const Text('Apakah Anda yakin ingin logout?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx), // batal
+            child: const Text('Batal'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(ctx); // tutup dialog dulu
+              _logout(context);
+            },
+            child: const Text('Logout'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _logout(BuildContext context) async {
+    const storage = FlutterSecureStorage();
+
+    await storage.delete(key: 'authToken');
+
+    // Tampilkan snackbar sebelum navigasi
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Berhasil logout'),
+        duration: Duration(seconds: 2),
+      ),
+    );
+
+    // Tunggu sebentar agar user lihat snackbarnya
+    await Future.delayed(const Duration(milliseconds: 1500));
+
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => const LoginScreen()),
+      (route) => false,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Konfirmasi Customer'),
-        
+        actions: [
+          // Tombol Logout
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'Logout',
+            onPressed: () => _confirmLogout(context),
+          ),
+        ],
       ),
       body: BlocBuilder<ProductBloc, ProductState>(
         builder: (context, state) {
