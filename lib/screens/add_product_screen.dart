@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paml_camrent/data/models/request/product/add_product_request_model.dart';
@@ -17,7 +20,20 @@ class _AddProductScreenState extends State<AddProductScreen> {
   final TextEditingController _brandController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
-  final TextEditingController _imageUrlController = TextEditingController();
+
+  File? _selectedImage;
+  String _selectedStatus = 'available';
+
+  Future<void> _pickImage(ImageSource source) async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: source, imageQuality: 75);
+
+    if (pickedFile != null) {
+      setState(() {
+        _selectedImage = File(pickedFile.path);
+      });
+    }
+  }
 
   void _submit() {
     if (_formKey.currentState!.validate()) {
@@ -26,7 +42,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
         brand: _brandController.text,
         description: _descriptionController.text,
         rentalPricePerDay: int.tryParse(_priceController.text),
-        imageUrl: _imageUrlController.text,
+        status: _selectedStatus,
       );
 
       context.read<ProductBloc>().add(AddProductEvent(requestModel: model));
@@ -45,9 +61,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
             );
             Navigator.pop(context); // kembali ke halaman sebelumnya
           } else if (state is ProductError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Gagal: ${state.message}')),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text('Gagal: ${state.message}')));
           }
         },
         builder: (context, state) {
@@ -79,16 +95,50 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   ),
                   TextFormField(
                     controller: _priceController,
-                    decoration: const InputDecoration(labelText: 'Harga Sewa / Hari'),
+                    decoration: const InputDecoration(
+                      labelText: 'Harga Sewa / Hari',
+                    ),
                     keyboardType: TextInputType.number,
                     validator: (value) => value!.isEmpty ? 'Wajib diisi' : null,
                   ),
-                  TextFormField(
-                    controller: _imageUrlController,
-                    decoration: const InputDecoration(labelText: 'URL Gambar'),
-                    validator: (value) => value!.isEmpty ? 'Wajib diisi' : null,
+                  const SizedBox(height: 16),
+                  DropdownButtonFormField<String>(
+                    value: _selectedStatus,
+                    items: ['available', 'rented', 'maintenance']
+                        .map(
+                          (status) => DropdownMenuItem(
+                            value: status,
+                            child: Text(status),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedStatus = value!;
+                      });
+                    },
+                    decoration: const InputDecoration(labelText: 'Status'),
                   ),
                   const SizedBox(height: 20),
+                  if (_selectedImage != null)
+                    Image.file(_selectedImage!, height: 150),
+
+                  Row(
+                    children: [
+                      ElevatedButton.icon(
+                        onPressed: () => _pickImage(ImageSource.camera),
+                        icon: Icon(Icons.camera_alt),
+                        label: Text('Kamera'),
+                      ),
+                      const SizedBox(width: 10),
+                      ElevatedButton.icon(
+                        onPressed: () => _pickImage(ImageSource.gallery),
+                        icon: Icon(Icons.photo_library),
+                        label: Text('Galeri'),
+                      ),
+                    ],
+                  ),
+
                   ElevatedButton(
                     onPressed: _submit,
                     child: const Text('Simpan'),

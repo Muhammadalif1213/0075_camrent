@@ -23,12 +23,10 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     Emitter<ProductState> emit,
   ) async {
     emit(ProductLoading());
-    try {
-      final product = await productRepository.createProduct(event.requestModel);
-      emit(ProductAdded(product: product));
-    } catch (e) {
-      emit(ProductError(message: e.toString()));
-    }
+    final product = await productRepository.createProduct(event.requestModel);
+    product.fold((error) => emit(ProductError(message: error)), (response) {
+      emit(ProductAdded(product: response));
+    });
   }
 
   Future<void> _fetchAllProducts(

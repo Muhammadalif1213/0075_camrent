@@ -8,7 +8,7 @@ final class ProductInitial extends ProductState {}
 class ProductLoading extends ProductState {}
 
 class ProductAdded extends ProductState {
-  final Data product;
+  final AddProductResponseModel product;
 
   ProductAdded({required this.product});
 }

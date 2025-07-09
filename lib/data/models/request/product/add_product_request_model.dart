@@ -1,18 +1,21 @@
 import 'dart:convert';
+import 'dart:io';
 
 class AddProductRequestModel {
     final String? name;
     final String? brand;
     final String? description;
     final int? rentalPricePerDay;
-    final String? imageUrl;
+    final File? fotoCamera;
+    final String? status;
 
     AddProductRequestModel({
         this.name,
         this.brand,
         this.description,
         this.rentalPricePerDay,
-        this.imageUrl,
+        this.fotoCamera,
+        this.status,
     });
 
     factory AddProductRequestModel.fromJson(String str) => AddProductRequestModel.fromMap(json.decode(str));
@@ -24,7 +27,8 @@ class AddProductRequestModel {
         brand: json["brand"],
         description: json["description"],
         rentalPricePerDay: json["rental_price_per_day"],
-        imageUrl: json["image_url"],
+        fotoCamera: json["foto_camera"],
+        status: json["status"],
     );
 
     Map<String, dynamic> toMap() => {
@@ -32,6 +36,7 @@ class AddProductRequestModel {
         "brand": brand,
         "description": description,
         "rental_price_per_day": rentalPricePerDay,
-        "image_url": imageUrl,
+        "foto_camera": fotoCamera,
+        "status": status,
     };
 }

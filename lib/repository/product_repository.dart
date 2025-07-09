@@ -12,23 +12,29 @@ class ProductRepository {
 
   ProductRepository(this._serviceHttpClient);
 
-  Future<Data> createProduct(AddProductRequestModel model) async {
-    final response = await _serviceHttpClient.postWithToken(
-      'cameras', // pastikan endpoint ini benar
-      model.toMap(),
-    );
-
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      final responseData = AddProductResponseModel.fromJson(response.body);
-      if (responseData.data != null) {
-        return responseData.data!;
-      } else {
-        throw Exception('Produk berhasil dibuat, tapi data kosong.');
-      }
-    } else {
-      throw Exception(
-        'Gagal menambahkan produk. Status: ${response.statusCode}\nBody: ${response.body}',
+  Future<Either<String, AddProductResponseModel>> createProduct(
+    AddProductRequestModel model,
+  ) async {
+    try {
+      final response = await _serviceHttpClient.postWithToken(
+        'cameras', // pastikan endpoint ini benar
+        model.toMap(),
       );
+      log("Create Product Response: ${response.body}");
+      final jsonResponse = json.decode(response.body);
+
+      if (response.statusCode == 201) {
+        log("Create Product JSON Response: $jsonResponse");
+        final cameraResponse = AddProductResponseModel.fromMap(jsonResponse); 
+        // final cameraResponse = jsonResponse['message'] as String;
+        log("Create Product Model: ${cameraResponse}");
+        return Right(cameraResponse);
+      } else {
+        final errorMessage = json.decode(response.body);
+        return Left(errorMessage['message'] ?? 'Unknown error occurred');
+      }
+    } catch (e) {
+      return Left("An error occurred while creating the product: $e");
     }
   }
 
