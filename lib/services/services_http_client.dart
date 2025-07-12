@@ -49,23 +49,28 @@ class ServicesHttpClient {
     }
   }
 
-  Future<http.StreamedResponse> postMultipartWithToken({
+  // post WITH FILE (Multipart)
+  Future<http.Response> postMultipartWithToken({
     required String endpoint,
     required Map<String, String> fields,
     required File file,
-    required String fileFieldName,
   }) async {
     final token = await secureStorage.read(key: "authToken");
-    final uri = Uri.parse('$baseUrl/$endpoint');
+    final uri = Uri.parse('$baseUrl$endpoint'); // <-- URL diperbaiki
     final request = http.MultipartRequest('POST', uri);
 
     request.headers['Authorization'] = 'Bearer $token';
     request.fields.addAll(fields);
     request.files.add(
-      await http.MultipartFile.fromPath(fileFieldName, file.path),
+      await http.MultipartFile.fromPath(
+        'foto_camera',
+        file.path,
+      ), // Sesuaikan 'fileFieldName'
     );
 
-    return request.send();
+    // Ubah StreamedResponse menjadi Response biasa
+    final streamedResponse = await request.send();
+    return await http.Response.fromStream(streamedResponse);
   }
 
   //get
@@ -87,7 +92,30 @@ class ServicesHttpClient {
     }
   }
 
-  //put
+  // Multipart PUT with Token (method override _method=PUT)
+  Future<http.StreamedResponse> putMultipartWithToken({
+    required String endpoint,
+    required Map<String, String> fields,
+    File? file,
+    String? fileFieldName,
+  }) async {
+    final token = await secureStorage.read(key: "authToken");
+    final uri = Uri.parse("$baseUrl$endpoint");
+
+    final request = http.MultipartRequest('POST', uri);
+    request.headers['Authorization'] = 'Bearer $token';
+    request.fields['_method'] = 'PUT'; // Laravel expects this for update
+    request.fields.addAll(fields);
+
+    if (file != null && fileFieldName != null) {
+      request.files.add(
+        await http.MultipartFile.fromPath(fileFieldName, file.path),
+      );
+    }
+
+    return request.send();
+  }
+
   // DELETE with Token
   Future<http.Response> deleteWithToken(String endpoint) async {
     final token = await secureStorage.read(key: "authToken");
