@@ -3,8 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paml_camrent/data/presentation/auth/login/login_bloc.dart';
 import 'package:paml_camrent/data/presentation/auth/login_screen.dart';
 import 'package:paml_camrent/data/presentation/auth/register/register_bloc.dart';
+import 'package:paml_camrent/data/presentation/bloc/booking_bloc.dart';
 import 'package:paml_camrent/data/presentation/product/product_bloc.dart';
 import 'package:paml_camrent/repository/auth_repository.dart';
+import 'package:paml_camrent/repository/booking_repository.dart';
 import 'package:paml_camrent/repository/product_repository.dart';
 import 'package:paml_camrent/services/services_http_client.dart';
 
@@ -32,6 +34,11 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (context) => ProductBloc(
             productRepository: ProductRepository(ServicesHttpClient()),
+          ),
+        ),
+        BlocProvider(
+          create: (context) => BookingBloc(
+            bookingRepository: BookingRepository(ServicesHttpClient()),
           ),
         ),
       ],
