@@ -4,6 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:paml_camrent/data/models/response/product/get_all_product__response_model.dart';
 import 'package:paml_camrent/data/presentation/auth/login_screen.dart';
 import 'package:paml_camrent/data/presentation/product/product_bloc.dart';
+import 'package:paml_camrent/screens/customer/product_detail_screen_customer.dart';
 
 class CustomerConfirmScreen extends StatefulWidget {
   const CustomerConfirmScreen({super.key});
@@ -94,17 +95,27 @@ class _CustomerConfirmScreenState extends State<CustomerConfirmScreen> {
               itemBuilder: (context, index) {
                 final Datum product = state.products[index];
 
-                return Card(
-                  elevation: 2,
-                  margin: const EdgeInsets.only(bottom: 12),
-                  child: ListTile(
-                    title: Text(product.name ?? 'Tanpa Nama'),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Brand: ${product.brand ?? '-'}'),
-                        Text('Harga: Rp${product.rentalPricePerDay ?? '-'} / hari'),
-                      ],
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ProductDetailScreenCustomer(product: product),
+                      ),
+                    );
+                  },
+                  child: Card(
+                    elevation: 2,
+                    margin: const EdgeInsets.only(bottom: 12),
+                    child: ListTile(
+                      title: Text(product.name ?? 'Tanpa Nama'),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Brand: ${product.brand ?? '-'}'),
+                          Text('Harga: Rp${product.rentalPricePerDay ?? '-'} / hari'),
+                        ],
+                      ),
                     ),
                   ),
                 );
