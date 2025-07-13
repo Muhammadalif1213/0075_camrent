@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paml_camrent/screens/admin/admin_confirm_screen.dart';
 import 'package:paml_camrent/screens/customer/customer_confirm_screen.dart';
+import 'package:paml_camrent/screens/customer/main_customer_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -142,13 +143,12 @@ class _LoginScreenState extends State<LoginScreen> {
                               (route) => false,
                             );
                           } else if (role == 'customer') {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(state.responseModel.message!),
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const MainCustomerScreen(),
                               ),
-                            );
-                            context.pushAndRemoveUntil(
-                              const CustomerConfirmScreen(),
                               (route) => false,
                             );
                           } else {
