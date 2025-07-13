@@ -4,14 +4,11 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paml_camrent/data/models/request/booking/add_booking_request_model.dart';
-import 'package:paml_camrent/data/presentation/booking/booking_bloc.dart';
-
-import 'package:paml_camrent/repository/booking_repository.dart';
+import 'package:paml_camrent/data/presentation/cart/cart_bloc.dart';
 
 import 'package:paml_camrent/data/models/response/product/get_all_product__response_model.dart';
-import 'package:paml_camrent/screens/customer/customer_checkout_screen.dart';
+import 'package:paml_camrent/screens/customer/booking_cart_screen.dart';
 import 'package:paml_camrent/screens/customer/date_picker_screen.dart';
-import 'package:paml_camrent/services/services_http_client.dart';
 
 class ProductDetailScreenCustomer extends StatelessWidget {
   final Datum product;
@@ -60,6 +57,57 @@ class ProductDetailScreenCustomer extends StatelessWidget {
             ),
             Text(product.description ?? 'Tidak ada deskripsi.'),
 
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                icon: const Icon(Icons.add_shopping_cart),
+                label: const Text('Tambahkan ke Keranjang'),
+                onPressed: () {
+                  final bloc = context.read<CartBloc>();
+                  final state = bloc.state;
+
+                  final alreadyInCart = state.items.any(
+                    (item) => item.cameraId == product.id,
+                  );
+
+                  if (alreadyInCart) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Produk sudah ada di keranjang'),
+                      ),
+                    );
+                  } else {
+                    bloc.add(
+                      AddToCartEvent(
+                        item: CartItem(cameraId: product.id!, quantity: 1),
+                      ),
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Berhasil ditambahkan ke keranjang'),
+                      ),
+                    );
+                  }
+                },
+              ),
+            ),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                icon: const Icon(Icons.shopping_cart_outlined),
+                label: const Text('Lihat Keranjang'),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          const BookingCartScreen(productList: []), // Pastikan screen ini sudah dibuat
+                    ),
+                  );
+                },
+              ),
+            ),
+
             const Spacer(), // Mendorong tombol ke bagian bawah
 
             SizedBox(
@@ -70,7 +118,8 @@ class ProductDetailScreenCustomer extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => DatePickerScreen(camera: product),
+                      builder: (context) =>
+                          DatePickerScreen(cameras: [product]),
                     ),
                   );
                 },

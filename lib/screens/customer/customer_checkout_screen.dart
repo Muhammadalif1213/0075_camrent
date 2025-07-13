@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:paml_camrent/data/models/request/booking/add_booking_request_model.dart';
-import 'package:paml_camrent/data/presentation/bloc/booking_bloc.dart';
+import 'package:paml_camrent/data/models/response/product/get_all_product__response_model.dart';
+import 'package:paml_camrent/data/presentation/booking/booking_bloc.dart';
 
 class CustomerCheckoutScreen extends StatelessWidget {
+  final List<Datum> productList;
   final List<CartItem> cartItems;
   final String startDate;
   final String endDate;
@@ -16,6 +18,7 @@ class CustomerCheckoutScreen extends StatelessWidget {
     required this.startDate,
     required this.endDate,
     required this.totalPrice,
+    required this.productList,
   });
 
   // Method submit tetap sama
@@ -32,10 +35,14 @@ class CustomerCheckoutScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final DateTime start = DateTime.parse(startDate);
+    final DateTime end = DateTime.parse(endDate);
+    final int durationInDays = end.difference(start).inDays + 1;
     // Ambil nama kamera dari item pertama (karena alurnya dari detail)
     // Untuk alur multi-item, Anda perlu menampilkan list
-    final cameraName =
-        'Kamera Pilihan Anda'; // Ganti dengan data asli jika perlu
+    final cameraName = cartItems.isNotEmpty
+        ? cartItems[0].cameraId
+        : 'Kamera Tidak Ditemukan';
 
     return Scaffold(
       appBar: AppBar(title: const Text('Konfirmasi Akhir')),
@@ -65,7 +72,30 @@ class CustomerCheckoutScreen extends StatelessWidget {
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               const SizedBox(height: 16),
-              Text('Item: $cameraName'),
+              // Text('Item: $cameraName'),
+              ...cartItems.map((item) {
+                final product = productList.firstWhere(
+                  (p) => p.id == item.cameraId,
+                );
+                final double pricePerDay =
+                    double.tryParse(product.rentalPricePerDay ?? '0') ?? 0;
+                final double itemTotal =
+                    pricePerDay * durationInDays * item.quantity;
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${product.name}',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    Text('Durasi: $durationInDays hari'),
+                    Text('Harga per hari: Rp $pricePerDay'),
+                    Text('Subtotal: Rp $itemTotal'),
+                    const SizedBox(height: 12),
+                  ],
+                );
+              }).toList(),
               Text('Tanggal Mulai: $startDate'),
               Text('Tanggal Selesai: $endDate'),
               const Divider(height: 32),
@@ -78,7 +108,7 @@ class CustomerCheckoutScreen extends StatelessWidget {
               const Spacer(),
               BlocBuilder<BookingBloc, BookingState>(
                 builder: (context, state) {
-                  if (state is CreateBookingLoading) {
+                  if (state is BookingLoading) {
                     return const Center(child: CircularProgressIndicator());
                   }
                   return SizedBox(
