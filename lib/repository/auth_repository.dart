@@ -110,4 +110,27 @@ class AuthRepository {
       return Left("An error occurred while registering.");
     }
   }
+
+  Future<Either<String, AuthResponseModel>> getProfile() async {
+  try {
+    final response = await _serviceHttpClient.get('me'); 
+
+    if (response.statusCode == 200) {
+      final jsonResponse = json.decode(response.body);
+      log("Profile Response: $jsonResponse");
+      
+      final profileResponse = AuthResponseModel.fromMap(jsonResponse);
+      
+      return Right(profileResponse);
+    } else {
+      // PERBAIKAN: Langsung akses message dari JSON yang sudah di-decode
+      final errorResponse = json.decode(response.body);
+      final error = errorResponse['message'] ?? 'Gagal memuat profil';
+      return Left(error);
+    }
+  } catch (e) {
+    // Error yang Anda lihat sekarang ditangkap di sini
+    return Left('Terjadi kesalahan: $e');
+  }
+}
 }
