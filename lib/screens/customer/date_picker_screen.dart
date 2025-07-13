@@ -1,18 +1,21 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:paml_camrent/data/models/response/booking/add_booking_response_model.dart';
 
 // Import model dan halaman yang relevan
 import 'package:paml_camrent/data/models/response/product/get_all_product__response_model.dart';
 import 'package:paml_camrent/data/models/request/booking/add_booking_request_model.dart';
 import 'package:paml_camrent/screens/customer/customer_checkout_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:paml_camrent/data/presentation/bloc/booking_bloc.dart';
+import 'package:paml_camrent/data/presentation/booking/booking_bloc.dart';
 import 'package:paml_camrent/repository/booking_repository.dart';
 import 'package:paml_camrent/services/services_http_client.dart';
 
 class DatePickerScreen extends StatefulWidget {
   final Datum camera; // Menerima data kamera dari halaman detail
-
   const DatePickerScreen({super.key, required this.camera});
 
   @override
@@ -81,6 +84,13 @@ class _DatePickerScreenState extends State<DatePickerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Uint8List? imageBytes;
+    if (widget.camera.fotoCamera != null &&
+        widget.camera.fotoCamera!.isNotEmpty) {
+      try {
+        imageBytes = base64Decode(widget.camera.fotoCamera!);
+      } catch (_) {}
+    }
     return Scaffold(
       appBar: AppBar(title: const Text('Pilih Tanggal Sewa')),
       body: Padding(
@@ -88,6 +98,22 @@ class _DatePickerScreenState extends State<DatePickerScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const SizedBox(height: 16),
+            if (imageBytes != null) ...[
+              Center(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.memory(
+                    imageBytes,
+                    width: double.infinity,
+                    height: 200,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
+            const SizedBox(height: 16),
             Text(
               'Kamera: ${widget.camera.name}',
               style: Theme.of(context).textTheme.titleLarge,

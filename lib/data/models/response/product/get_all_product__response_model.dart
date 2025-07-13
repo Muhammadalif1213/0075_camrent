@@ -35,6 +35,7 @@ class Datum {
   final String? status;
   final DateTime? createdAt;
   final DateTime? updatedAt;
+  final String? fotoCamera; // base64 string
 
   Datum({
     this.id,
@@ -46,6 +47,7 @@ class Datum {
     this.status,
     this.createdAt,
     this.updatedAt,
+    this.fotoCamera,
   });
 
   factory Datum.fromJson(String str) => Datum.fromMap(json.decode(str));
@@ -66,6 +68,7 @@ class Datum {
     updatedAt: json["updated_at"] == null
         ? null
         : DateTime.parse(json["updated_at"]),
+    fotoCamera: json["foto_camera"],
   );
 
   Map<String, dynamic> toMap() => {
@@ -78,5 +81,6 @@ class Datum {
     "status": status,
     "created_at": createdAt?.toIso8601String(),
     "updated_at": updatedAt?.toIso8601String(),
+    "foto_camera": fotoCamera,
   };
 }

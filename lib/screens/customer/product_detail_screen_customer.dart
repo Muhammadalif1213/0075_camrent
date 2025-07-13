@@ -1,7 +1,10 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paml_camrent/data/models/request/booking/add_booking_request_model.dart';
-import 'package:paml_camrent/data/presentation/bloc/booking_bloc.dart';
+import 'package:paml_camrent/data/presentation/booking/booking_bloc.dart';
 
 import 'package:paml_camrent/repository/booking_repository.dart';
 
@@ -17,6 +20,12 @@ class ProductDetailScreenCustomer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Uint8List? imageBytes;
+    if (product.fotoCamera != null && product.fotoCamera!.isNotEmpty) {
+      try {
+        imageBytes = base64Decode(product.fotoCamera!);
+      } catch (_) {}
+    }
     return Scaffold(
       appBar: AppBar(title: Text(product.name ?? 'Detail Produk')),
       body: Padding(
@@ -25,9 +34,20 @@ class ProductDetailScreenCustomer extends StatelessWidget {
           // Mengubah ListView menjadi Column
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Gambar produk jika ada (opsional)
-            // if (product.imageUrl != null)
-            //   Image.network(product.imageUrl!, height: 200, width: double.infinity, fit: BoxFit.cover),
+            if (imageBytes != null) ...[
+              Center(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.memory(
+                    imageBytes,
+                    width: double.infinity,
+                    height: 200,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
             const SizedBox(height: 16),
             Text("Nama: ${product.name ?? '-'}"),
             Text("Merek: ${product.brand ?? '-'}"),

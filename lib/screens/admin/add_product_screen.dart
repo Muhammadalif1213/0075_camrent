@@ -26,7 +26,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
   Future<void> _pickImage(ImageSource source) async {
     final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: source, imageQuality: 75);
+    final pickedFile = await picker.pickImage(source: source, imageQuality: 50);
 
     if (pickedFile != null) {
       setState(() {
@@ -43,6 +43,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
         description: _descriptionController.text,
         rentalPricePerDay: int.tryParse(_priceController.text),
         status: _selectedStatus,
+        fotoCamera: _selectedImage,
       );
 
       context.read<ProductBloc>().add(AddProductEvent(requestModel: model));

@@ -25,9 +25,28 @@ class ProductListLoaded extends ProductState {
   ProductListLoaded({required this.products});
 }
 
+class ProductDetailLoaded extends ProductState {
+  final Datum product;
+
+  ProductDetailLoaded(this.product);
+}
+
+class ProductUpdated extends ProductState {
+  final Data product;
+
+  ProductUpdated({required this.product});
+}
+
+class ProductUpdateError extends ProductState {
+  final String message;
+
+  ProductUpdateError({required this.message});
+}
+
+class ProductUpdating extends ProductState {}
+
 class ProductDeleted extends ProductState {
   final String message;
 
   ProductDeleted({required this.message});
 }
-

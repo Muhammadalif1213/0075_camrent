@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 
@@ -16,6 +18,9 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     on<AddProductEvent>(_addProduct);
     on<FetchAllProductsEvent>(_fetchAllProducts);
     on<DeleteProductEvent>(_deleteProduct);
+    on<UpdateProductEvent>(_updateProduct);
+    on<FetchProductDetailEvent>(_onFetchProductDetail);
+
     on<ProductEvent>((event, emit) async {});
   }
 
@@ -28,6 +33,36 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     product.fold((error) => emit(ProductError(message: error)), (response) {
       emit(ProductAdded(product: response));
     });
+  }
+
+  Future<void> _updateProduct(
+    UpdateProductEvent event,
+    Emitter<ProductState> emit,
+  ) async {
+    emit(ProductLoading());
+    final result = await productRepository.updateProduct(
+      id: event.productId,
+      model: event.updatedModel,
+      imageFile: event.imageFile,
+    );
+    result.fold(
+      (error) => emit(ProductError(message: error)),
+      (updatedProduct) => emit(ProductUpdated(product: updatedProduct.data!)),
+    );
+  }
+
+  Future<void> _onFetchProductDetail(
+    FetchProductDetailEvent event,
+    Emitter<ProductState> emit,
+  ) async {
+    emit(ProductLoading());
+
+    final result = await productRepository.getDetailProduct(event.id);
+
+    result.fold(
+      (error) => emit((ProductError(message: error))),
+      (product) => emit(ProductDetailLoaded(product)),
+    );
   }
 
   Future<void> _fetchAllProducts(
@@ -43,7 +78,6 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     }
   }
 
-
   Future<void> _deleteProduct(
     DeleteProductEvent event,
     Emitter<ProductState> emit,
@@ -51,7 +85,9 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     emit(ProductLoading());
     try {
       await productRepository.deleteProduct(event.productId);
-      emit(ProductDeleted(message: '')); // Optional: buat state khusus untuk delete
+      emit(
+        ProductDeleted(message: ''),
+      ); // Optional: buat state khusus untuk delete
       add(FetchAllProductsEvent()); // untuk refresh data
     } catch (e) {
       emit(ProductError(message: e.toString()));
