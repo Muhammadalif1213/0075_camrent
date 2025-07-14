@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:paml_camrent/data/models/request/booking/add_booking_request_model.dart';
@@ -41,19 +40,15 @@ class _DatePickerScreenState extends State<DatePickerScreen> {
         _endDate!.isAfter(_startDate!)) {
       _numberOfDays = _endDate!.difference(_startDate!).inDays + 1;
       _totalPrice = 0;
-
       for (final cam in widget.cameras) {
         final pricePerDay = double.tryParse(cam.rentalPricePerDay ?? '0') ?? 0;
         _totalPrice += pricePerDay * _numberOfDays;
       }
-
-      setState(() {});
     } else {
-      setState(() {
-        _numberOfDays = 0;
-        _totalPrice = 0.0;
-      });
+      _numberOfDays = 0;
+      _totalPrice = 0.0;
     }
+    setState(() {});
   }
 
   Future<void> _selectDate(BuildContext context, bool isStartDate) async {
@@ -66,36 +61,42 @@ class _DatePickerScreenState extends State<DatePickerScreen> {
       lastDate: DateTime(2101),
     );
     if (picked != null) {
-      setState(() {
-        final formattedDate = DateFormat('yyyy-MM-dd').format(picked);
-        if (isStartDate) {
-          _startDate = picked;
-          _startDateController.text = formattedDate;
-        } else {
-          _endDate = picked;
-          _endDateController.text = formattedDate;
-        }
-        _calculatePrice();
-      });
+      final formattedDate = DateFormat('yyyy-MM-dd').format(picked);
+      if (isStartDate) {
+        _startDate = picked;
+        _startDateController.text = formattedDate;
+      } else {
+        _endDate = picked;
+        _endDateController.text = formattedDate;
+      }
+      _calculatePrice();
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Pilih Tanggal Sewa')),
+      appBar: AppBar(
+        title: const Text('Pilih Tanggal Sewa'),
+        backgroundColor: Colors.orange.shade700,
+        foregroundColor: Colors.white,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              "Daftar Kamera yang Disewa:",
+              "Daftar Kamera yang Disewa",
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
-            Expanded(
+
+            // Kamera List
+            SizedBox(
+              height: 130,
               child: ListView.builder(
+                scrollDirection: Axis.horizontal,
                 itemCount: widget.cameras.length,
                 itemBuilder: (context, index) {
                   final cam = widget.cameras[index];
@@ -106,30 +107,59 @@ class _DatePickerScreenState extends State<DatePickerScreen> {
                     } catch (_) {}
                   }
 
-                  return Card(
-                    child: ListTile(
-                      leading: imageBytes != null
-                          ? Image.memory(
-                              imageBytes,
-                              width: 60,
-                              height: 60,
-                              fit: BoxFit.cover,
-                            )
-                          : const Icon(Icons.camera_alt, size: 40),
-                      title: Text(cam.name ?? 'No name'),
-                      subtitle: Text(
-                        'Rp${cam.rentalPricePerDay}/hari - ${cam.brand}',
+                  return Container(
+                    width: 160,
+                    margin: const EdgeInsets.only(right: 12),
+                    child: Card(
+                      elevation: 3,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: Column(
+                          children: [
+                            imageBytes != null
+                                ? ClipRRect(
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: Image.memory(
+                                      imageBytes,
+                                      height: 60,
+                                      width: double.infinity,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  )
+                                : const Icon(Icons.camera_alt, size: 40),
+                            const SizedBox(height: 6),
+                            Text(
+                              cam.name ?? '-',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            Text(
+                              'Rp${cam.rentalPricePerDay}/hari',
+                              style: const TextStyle(fontSize: 11),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   );
                 },
               ),
             ),
-            const SizedBox(height: 12),
+
+            const SizedBox(height: 20),
+
+            // Date Picker
             TextFormField(
               controller: _startDateController,
               decoration: const InputDecoration(
                 labelText: 'Tanggal Mulai',
+                border: OutlineInputBorder(),
                 suffixIcon: Icon(Icons.calendar_today),
               ),
               readOnly: true,
@@ -140,27 +170,52 @@ class _DatePickerScreenState extends State<DatePickerScreen> {
               controller: _endDateController,
               decoration: const InputDecoration(
                 labelText: 'Tanggal Selesai',
+                border: OutlineInputBorder(),
                 suffixIcon: Icon(Icons.calendar_today),
               ),
               readOnly: true,
               onTap: () => _selectDate(context, false),
             ),
-            const SizedBox(height: 16),
+
+            const SizedBox(height: 20),
+
+            // Total Price Display
             if (_totalPrice > 0)
               Card(
-                color: Colors.green.shade100,
+                color: Colors.green.shade50,
+                elevation: 2,
                 child: Padding(
-                  padding: const EdgeInsets.all(12.0),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 14,
+                    horizontal: 16,
+                  ),
                   child: Text(
-                    'Total: Rp $_totalPrice untuk $_numberOfDays hari',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    'Total: Rp ${_totalPrice.toStringAsFixed(0)} untuk $_numberOfDays hari',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: Colors.green,
+                    ),
                   ),
                 ),
               ),
-            const SizedBox(height: 12),
+
+            const Spacer(),
+
+            // Button Checkout
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton(
+              child: ElevatedButton.icon(
+                icon: const Icon(Icons.check_circle_outline),
+                label: const Text('Lanjut ke Checkout'),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  backgroundColor: Colors.orange.shade700,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
                 onPressed:
                     (_startDate != null &&
                         _endDate != null &&
@@ -191,7 +246,6 @@ class _DatePickerScreenState extends State<DatePickerScreen> {
                         );
                       }
                     : null,
-                child: const Text('Lanjut ke Checkout'),
               ),
             ),
           ],
