@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paml_camrent/data/models/response/booking/booking_response_model.dart';
 import 'package:paml_camrent/data/presentation/booking/booking_bloc.dart';
+import 'package:paml_camrent/screens/admin/admin_payment_screen.dart';
 
 class AdminBookingListScreen extends StatefulWidget {
   const AdminBookingListScreen({super.key});
@@ -142,7 +143,7 @@ class _AdminBookingListScreenState extends State<AdminBookingListScreen> {
                         ),
                         const SizedBox(height: 8),
 
-                        // --- Tombol Aksi (Hanya muncul jika status 'pending') ---
+                        // Tombol untuk status "pending"
                         if (booking.status == 'pending')
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
@@ -176,6 +177,39 @@ class _AdminBookingListScreenState extends State<AdminBookingListScreen> {
                                 child: const Text('Approve'),
                               ),
                             ],
+                          ),
+
+                        // Tombol untuk status approved/ongoing → Arahkan ke halaman payment
+                        if (booking.status == 'approved' ||
+                            booking.status == 'ongoing')
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: ElevatedButton.icon(
+                              icon: const Icon(Icons.attach_money),
+                              label: Text(
+                                booking.paymentStatus == 'paid'
+                                    ? 'Sudah Dibayar'
+                                    : 'Input Pembayaran',
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: booking.paymentStatus == 'paid'
+                                    ? Colors.grey
+                                    : Colors.green.shade700,
+                                foregroundColor: Colors.white,
+                              ),
+                              onPressed: booking.paymentStatus == 'paid'
+                                  ? null // dinonaktifkan
+                                  : () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => AdminPaymentScreen(
+                                            bookingId: booking.id,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                            ),
                           ),
                       ],
                     ),
