@@ -3,6 +3,7 @@ import 'package:paml_camrent/screens/customer/customer_confirm_screen.dart';
 
 // Import halaman-halaman yang akan Anda tampilkan
 import 'package:paml_camrent/screens/customer/booking_list_screen.dart';
+import 'package:paml_camrent/screens/customer/my_booking_screen.dart';
 import 'package:paml_camrent/screens/customer/profile_screen.dart';
 
 

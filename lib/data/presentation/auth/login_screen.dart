@@ -61,12 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: [
                   const SizedBox(height: 100),
                   // Ganti 'assets/images/camera.png' dengan path aset gambar Anda
-                  Image.asset(
-                    'assets/images/camera.png',
-                    width: 10,
-                    height: 10,
-                  ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 2),
                   const Text(
                     'Welcome to!',
                     style: TextStyle(
@@ -94,6 +89,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         color: AppColors.primary,
                       ),
                     ),
+                    Image.asset('assets/images/logo.png', width: 100, height: 100),
                     const SpaceHeight(20),
                     const Text(
                       'Login',
