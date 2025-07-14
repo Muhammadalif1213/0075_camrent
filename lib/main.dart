@@ -5,11 +5,13 @@ import 'package:paml_camrent/data/presentation/auth/login/login_bloc.dart';
 import 'package:paml_camrent/data/presentation/auth/login_screen.dart';
 import 'package:paml_camrent/data/presentation/auth/profile/profile_bloc_bloc.dart';
 import 'package:paml_camrent/data/presentation/auth/register/register_bloc.dart';
-import 'package:paml_camrent/data/presentation/bloc/cart_bloc.dart';
+import 'package:paml_camrent/data/presentation/cart/cart_bloc.dart';
 import 'package:paml_camrent/data/presentation/booking/booking_bloc.dart';
+import 'package:paml_camrent/data/presentation/payment/payment_bloc.dart';
 import 'package:paml_camrent/data/presentation/product/product_bloc.dart';
 import 'package:paml_camrent/repository/auth_repository.dart';
 import 'package:paml_camrent/repository/booking_repository.dart';
+import 'package:paml_camrent/repository/payment_repository.dart';
 import 'package:paml_camrent/repository/product_repository.dart';
 import 'package:paml_camrent/services/services_http_client.dart';
 import 'package:provider/provider.dart';
@@ -49,6 +51,9 @@ class MyApp extends StatelessWidget {
               ProfileBloc(authRepository: AuthRepository(ServicesHttpClient())),
         ),
         BlocProvider(create: (context) => CartBloc()),
+        BlocProvider(
+          create: (context) => PaymentBloc(paymentRepository: PaymentRepository(ServicesHttpClient())),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
